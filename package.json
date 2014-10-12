@@ -1,0 +1,28 @@
+{
+  "name": "studentcard",
+  "description": "Student Card generator by Leads Technologies Inc.",
+  "version": "0.1.0",
+  "author": "Frank,H.L.Lai <frank@leadstec.com>",
+  "contributors": [
+    "P.Feng <pfeng@leadstec.com>",
+    "L.F.Zhao <lfzhao@leadstec.com>"
+  ],
+  "homepage": "http://www.leadstec.com",
+  "scripts": {
+    "test": "make test"
+  },
+  "dependencies": {
+    "canvas": "latest",
+    "gm": "latest"
+  },
+  "devDependencies": {
+    "express": "3.0",
+    "jade": "0.28.1",
+    "mocha": "*",
+    "should": "*"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "main": "./index.js"
+}
