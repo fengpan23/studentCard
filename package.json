@@ -14,9 +14,10 @@
   "dependencies": {
     "canvas": "latest",
     "gm": "latest",
-    "rd": "latest",
     "node-xlsx": "latest",
-    "walk": "latest"
+    "underscore": "latest",
+    "walk": "latest",
+    "cardgen": "git+http://pfeng:fengpan321@git.lxpt.cn/frank/cardgen.git"
   },
   "engines": {
     "node": ">= 0.10.0"

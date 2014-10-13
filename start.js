@@ -1,19 +1,20 @@
 var fs = require('fs');
 var xlsx = require('node-xlsx');
 var walk = require('walk');
+var _ = require('underscore');
 
-var toCard = require('./index');
+var cardgen = require('cardgen');
+
+function trim(s) {
+  return s.replace(/(^\s*)|(\s*$)/g, "");
+}
 
 function cvsload(root, filename) {
   //清除错误记录文件
-  fs.unlink(root + '/message.txt', function(err, mess) {
-    // console.log(err);
-    // console.log(mess);
+  fs.unlink(__dirname + '/' + schoolname + '.txt', function(err, mess) {
   })
-
   var path = root + '/' + filename;
   var obj = xlsx.parse(path);
-  //第一个工作表的数据
   var data = obj[0].data;
 
   for (i in data) {
@@ -22,19 +23,37 @@ function cvsload(root, filename) {
     }
     var stu = {};
     stu.stu_school = data[i][0];
+    stu.stu_grade = data[i][1];
+    stu.stu_class = data[i][2];
     stu.stu_name = data[i][4];
     stu.serial_number = data[i][5];
 
-    try{
-      var resolvedPath = fs.realpathSync(root + '/' + stu.stu_name + '.jpg');
-      var schoolname = stu.stu_school;
-      if(schoolname.indexOf('南宫市') !== 0){
-          schoolname = '南宫市' + schoolname;
-      }
+    var schoolname = stu.stu_school;
+    if (schoolname && schoolname.indexOf('南宫市') !== 0) {
+      schoolname = '南宫市' + schoolname;
+    } else {
+      continue;
+    }
+    //get Most appropriate image
+    var studentname = getBestFit(root, stu.stu_name);
+
+    if (!studentname) {
+      fs.appendFile(__dirname + '/log/' + schoolname + '.txt', root + '/' + stu.stu_name + '\r\n', function(err) {});
+      continue;
+    }
+
+    try {
+      var resolvedPath = root + '/' + studentname;
+      var params = {
+        school: schoolname,
+        name: stu.stu_name,
+        serial: stu.serial_number,
+      };
       console.log(resolvedPath);
-      toCard.createStudentCard(schoolname, stu.stu_name, stu.serial_number, resolvedPath);
-    }catch(err){
-      fs.appendFile(root + '/message.txt', err.path + '\r\n', function(err) {});
+      // cardgen.generate(resolvedPath, params, __dirname + '/card/' +schoolname + '/' + stu.stu_grade + '/' + stu.stu_class);
+      cardgen.generate(resolvedPath, params, __dirname + '/card/');
+    } catch (err) {
+      fs.appendFile(__dirname + '/log/' + schoolname + '.txt', err.path + '\r\n', function(err) {});
     }
   }
 }
@@ -58,3 +77,23 @@ walker.on("names", function(root, nodeNamesArray) {
     return 0;
   });
 });
+
+function getBestFit(folder, name) {
+  var bitName = name;
+  options = {
+    listeners: {
+      names: function(root, nodeNamesArray) {
+        bitName = _.find(nodeNamesArray, function(nodeName) {
+          return nodeName.replace('.jpg', '') === name;
+        });
+        if (!bitName) {
+          bitName = _.filter(nodeNamesArray, function(nodeName) {
+            return nodeName.indexOf(name) >= 0;
+          });
+        }
+      }
+    }
+  };
+  walk.walkSync(folder, options);
+  return _.isArray(bitName) ? bitName[0] : bitName;
+}
