@@ -13,16 +13,13 @@
   },
   "dependencies": {
     "canvas": "latest",
-    "gm": "latest"
-  },
-  "devDependencies": {
-    "express": "3.0",
-    "jade": "0.28.1",
-    "mocha": "*",
-    "should": "*"
+    "gm": "latest",
+    "rd": "latest",
+    "node-xlsx": "latest",
+    "walk": "latest"
   },
   "engines": {
     "node": ">= 0.10.0"
   },
-  "main": "./index.js"
+  "main": "./start.js"
 }

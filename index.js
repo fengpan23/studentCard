@@ -23,7 +23,7 @@ function fontFile(name) {
 var simheiFont = new Font('simheiFont', fontFile('simhei.ttf'));
 
 // Function for create the student card image
-function createStudentCard(schoolName, studentName, serial, photoPath) {
+exports.createStudentCard = function createStudentCard(schoolName, studentName, serial, photoPath) {
 	var canvas = new Canvas(1918, 2296);
 	var ctx = canvas.getContext('2d');
 
@@ -60,21 +60,25 @@ function createStudentCard(schoolName, studentName, serial, photoPath) {
 
 	var out = fs.createWriteStream(__dirname + '/' + serial + '_' + studentName + '.png');
 
-	var stream = canvas.createPNGStream();
+	// var stream = canvas.createPNGStream();
 
-	// var stream = canvas.createJPEGStream({
-	//	  bufsize : 4096,
-	//	  quality : 95
-	//  });
+	var stream = canvas.createJPEGStream({
+		  bufsize : 4096,
+		  quality : 95
+	 });
 
 	stream.on('data', function(chunk){
-	  out.write(chunk);
+	  	out.write(chunk);
+	});
+	stream.on('end', function(chunk){
+		console.log('to card end');
+	  	out.end();
 	});
 }
 
-var testPath = __dirname + '/images/陈潇璇.jpg';
+// var testPath = __dirname + '/images/陈潇璇.jpg';
 
-createStudentCard('南宫第一小学', '张三', '080132', testPath);
+// createStudentCard('南宫第一小学', '张三', '080132', testPath);
 
 //var input_img = __dirname + '/result.png';
 var input_img = __dirname + '/font.png';
@@ -82,13 +86,13 @@ var output_img = __dirname + '/converted.jpg';
 
 
 //output all available image properties
-im(input_img)
-	.identify(function (err, data) {
-		if (!err) 
-			console.log(data);
-		else
-			console.log(err);
-	});
+// im(input_img)
+// 	.identify(function (err, data) {
+// 		if (!err) 
+// 			console.log(data);
+// 		else
+// 			console.log(err);
+// 	});
 
 /*
 im(input_img)
