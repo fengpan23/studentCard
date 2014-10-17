@@ -8,12 +8,7 @@
     "L.F.Zhao <lfzhao@leadstec.com>"
   ],
   "homepage": "http://www.leadstec.com",
-  "scripts": {
-    "test": "make test"
-  },
   "dependencies": {
-    "canvas": "latest",
-    "gm": "latest",
     "node-xlsx": "latest",
     "underscore": "latest",
     "walk": "latest",

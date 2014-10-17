@@ -10,9 +10,6 @@ function trim(s) {
 }
 
 function cvsload(root, filename) {
-  //清除错误记录文件
-  fs.unlink(__dirname + '/' + schoolname + '.txt', function(err, mess) {
-  })
   var path = root + '/' + filename;
   var obj = xlsx.parse(path);
   var data = obj[0].data;
@@ -29,14 +26,20 @@ function cvsload(root, filename) {
     stu.serial_number = data[i][5];
 
     var schoolname = stu.stu_school;
-    if (schoolname && schoolname.indexOf('南宫市') !== 0) {
-      schoolname = '南宫市' + schoolname;
-    } else {
+    if(!schoolname){
       continue;
+    }else{
+      schoolname = trim(stu.stu_school);
     }
+
+    if(schoolname.indexOf('南宫市') >=0){
+       schoolname = schoolname.replace('南宫市', '');
+    }else if(schoolname.indexOf('南宫') >= 0){
+       schoolname = schoolname.replace('南宫', '');
+    }
+     schoolname = '南宫市' + schoolname;
     //get Most appropriate image
     var studentname = getBestFit(root, stu.stu_name);
-
     if (!studentname) {
       fs.appendFile(__dirname + '/log/' + schoolname + '.txt', root + '/' + stu.stu_name + '\r\n', function(err) {});
       continue;
@@ -51,9 +54,9 @@ function cvsload(root, filename) {
       };
       console.log(resolvedPath);
       // cardgen.generate(resolvedPath, params, __dirname + '/card/' +schoolname + '/' + stu.stu_grade + '/' + stu.stu_class);
-      cardgen.generate(resolvedPath, params, __dirname + '/card/');
+      cardgen.generate(__dirname + '/' + resolvedPath, params, __dirname + '/card/' + root + '/');
     } catch (err) {
-      fs.appendFile(__dirname + '/log/' + schoolname + '.txt', err.path + '\r\n', function(err) {});
+      fs.appendFile(__dirname + '/' + root + '/log.txt', err.path + '\r\n', function(err) {});
     }
   }
 }
@@ -62,7 +65,7 @@ options = {
   followLinks: false,
   filters: ["Temp", "_Temp"]
 };
-walker = walk.walk('convert_box', options);
+walker = walk.walk('convert_box/第二中学', options);
 walker.on("file", function(root, fileStats, next) {
   var filename = fileStats.name;
   if (filename.indexOf('.xlsx') > 1) {
